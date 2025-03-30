@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "postinstall": "prisma generate",
     "migrate": "npx prisma migrate deploy",
-    "seed": "ts-node prisma/seed/seed-plan.ts && ts-node prisma/seed/seed-activity.ts",
+    "seed": "tsx prisma/seed/seed-plan.ts && tsx prisma/seed/seed-activity.ts",
     "postbuild": "npm run migrate && npm run seed"
   },
   "dependencies": {
