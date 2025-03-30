@@ -1,7 +1,8 @@
-import { PrismaClient, Role } from "@prisma/client";
+import {  Role } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
+
 
 async function main() {
   const defaultPassword = await hash("password123", 10);

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +22,26 @@ export default function SignInForm() {
   } = useForm<SigninFormType>({
     resolver: zodResolver(signinSchema),
   });
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
+
+  // Show a toast or error message when the page loads if there's a specific error
+  useEffect(() => {
+    console.log(error); //?dev
+    if (error === "account-exists-with-credentials") {
+      console.log("here");
+      setTimeout(() => {
+        toast.error(
+          "An account with this email already exists. Please sign in with your password."
+        );
+        router.push("/signin");
+      }, 100);
+    } else if (error) {
+      setTimeout(() => {
+        toast.error(error);
+      }, 100);
+    }
+  }, [error,router]);
 
   const onSubmit = async (data: SigninFormType) => {
     console.log("siginin form data", data);

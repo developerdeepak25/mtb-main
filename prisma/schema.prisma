@@ -17,23 +17,48 @@ enum AuthMethod {
   CREDENTIALS
 }
 
+enum ActivityType {
+  SIGNUP
+  DAILY_LOGIN
+  QUIZ_CORRECT
+  ADD_LOG
+  SPOTLIGHT
+}
+
+enum TransactionType {
+  DEBIT
+  CREDIT
+}
+
+enum SpotlightStatus {
+  APPLIED
+  IN_REVIEW
+  APPROVED
+  DISAPPROVED
+  EXPIRED
+  ACTIVE
+}
+
 model User {
-  id          String        @id @default(uuid())
-  email       String        @unique
-  password    String?
-  name        String
-  role        Role
-  image       String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  transaction Transaction[]
-  jpEarned    Int           @default(0)
-  jpSpent     Int           @default(0)
-  authMethod  AuthMethod    @default(CREDENTIALS) // Default to credentials
-  planId      String?
-  plan        Plan?         @relation(fields: [planId], references: [id])
-  planStart   DateTime? // When the user subscribed
-  planEnd     DateTime? // When the plan expires// Default to credentials
+  id                  String                @id @default(uuid())
+  email               String                @unique
+  password            String?
+  name                String
+  role                Role
+  image               String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  transaction         Transaction[]
+  jpEarned            Int                   @default(0)
+  jpSpent             Int                   @default(0)
+  jpBalance           Int                   @default(0)
+  jpTransaction       Int                   @default(0)
+  authMethod          AuthMethod            @default(CREDENTIALS) // Default to credentials
+  planId              String?
+  plan                Plan?                 @relation(fields: [planId], references: [id])
+  planStart           DateTime? // When the user subscribed
+  planEnd             DateTime? // When the plan expires
+  spotlight           Spotlight?
   userBusinessProfile UserBusinessProfile[]
 }
 
@@ -46,25 +71,12 @@ model Transaction {
   createdAt  DateTime @default(now())
 }
 
-enum TransactionType {
-  DEBIT
-  CREDIT
-}
-
 model Activity {
   id              String          @id @default(uuid())
   activity        ActivityType    @unique
   jpAmount        Int
   transactionType TransactionType @default(CREDIT)
   Transaction     Transaction[]
-}
-
-enum ActivityType {
-  SIGNUP
-  DAILY_LOGIN
-  QUIZ_CORRECT
-  ADD_LOG
-  SPOTLIGHT
 }
 
 model Plan {
@@ -75,6 +87,20 @@ model Plan {
   durationDays    Int? // NULL for lifetime plans, else number of days
   users           User[]
   price           String
+}
+
+model Spotlight {
+  id                  String          @id @default(uuid())
+  userId              String          @unique
+  user                User            @relation(fields: [userId], references: [id])
+  expiresAt           DateTime?
+  // jpUsed              Int
+  appliedAt           DateTime        @default(now())
+  status              SpotlightStatus @default(APPLIED)
+  // isActive            Boolean         @default(false) //TODO: instead of seprate isActive add it to status only -- DONE
+  defaultDurationDays Int             @default(1) // Default duration in days, can be changed by admin
+
+  @@index([expiresAt])
 }
 
 model Blog {
@@ -90,37 +116,37 @@ model Blog {
 }
 
 model UserBusinessProfile {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id])
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
   // Business Information
-  name              String?  // Business name
-  businessInfo      String?  // General business information
-  
+  name         String? // Business name
+  businessInfo String? // General business information
+
   // Mission & Goals
-  missionStatement  String?  // Mission statement of the business
-  goals             String?  // Goals of the user/business
-  
+  missionStatement String? // Mission statement of the business
+  goals            String? // Goals of the user/business
+
   // Achievements & Offerings
-  keyOfferings      String?  // What the business provides
-  achievements      String?  // Notable achievements
-  
+  keyOfferings String? // What the business provides
+  achievements String? // Notable achievements
+
   // Industry & Contact
-  email             String?  @unique // Business email
-  phone             String?  // Contact number
-  website           String?  // Business or personal website
-  socialHandles     Json?    // Store social media links (LinkedIn, Instagram, X, GitHub, etc.)
-  
+  email         String? @unique // Business email
+  phone         String? // Contact number
+  website       String? // Business or personal website
+  socialHandles Json? // Store social media links (LinkedIn, Instagram, X, GitHub, etc.)
+
   // Spotlight Information
-  isSpotlightActive         Boolean    @default(false)  // Whether the user is in the spotlight
-  featuredWorkTitle   String?    // Title of featured work for spotlight
-  featuredWorkDesc    String?    // Description of featured work
-  featuredWorkImage   String?    // Image URL for featured work
-  priorityContactLink String?    // Primary contact method when in spotlight
-  profileJpRewarded   Boolean          @default(false)
-  isProfileComplete   Boolean          @default(false)
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  isSpotlightActive   Boolean @default(false) // Whether the user is in the spotlight
+  featuredWorkTitle   String? // Title of featured work for spotlight
+  featuredWorkDesc    String? // Description of featured work
+  featuredWorkImage   String? // Image URL for featured work
+  priorityContactLink String? // Primary contact method when in spotlight
+  profileJpRewarded   Boolean @default(false)
+  isProfileComplete   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

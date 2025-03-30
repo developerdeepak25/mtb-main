@@ -1,11 +1,11 @@
-import { ActivityType, AuthMethod, PrismaClient } from "@prisma/client";
+import { ActivityType, AuthMethod } from "@prisma/client";
 import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import { assignJp } from "@/lib/dbUtils";
+import { assignJp } from "@/lib/utils/jp";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
 
 const DEFAULT_MAX_AGE = 45 * 60;
 const REMEMBER_ME_MAX_AGE = 7 * 24 * 60 * 60;
@@ -61,7 +61,7 @@ export const authConfig: AuthOptions = {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: "USER",
+            role: user.role,
             rememberMe: credentials.rememberMe === "true", // Convert checkbox value to boolean
           };
         } catch (error) {
@@ -91,9 +91,14 @@ export const authConfig: AuthOptions = {
         });
         console.log("user exists info", dbUser);
 
+        if (dbUser && dbUser.authMethod === AuthMethod.CREDENTIALS) {
+            // Instead of throwing an error, return false with a customized error
+            return "/signin?error=account-exists-with-credentials"; // or another URL where you'll handle this
+        }
+
         if (!dbUser) {
           // if user does not exist, create a new user and let signin
-          const role = user.email === process.env.ADMIN_MAIL ? "ADMIN" : "USER";
+          const role = user.email === process.env.ADMIN_EMAIL ? "ADMIN" : "USER";
           console.log(role);
 
           const createdUser = await prisma.user.create({

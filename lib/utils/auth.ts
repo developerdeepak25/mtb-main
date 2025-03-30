@@ -1,18 +1,33 @@
 import { authConfig } from "@/app/api/auth/[...nextauth]/auth.config";
 import { Role } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { getServerSession, Session } from "next-auth";
+
+// type SessionUser = {
+//   id: string;
+//   name: string;
+//   email: string;
+//   image?: string;
+//   role: Role;
+// };
+
+// type Session = {
+//   user: SessionUser;
+//   expires: string;
+// };
 
 export async function checkRole(
   role: Role,
   msg: string = "You are not authorized for this action"
-) {
-  const session = await getServerSession(authConfig);
-  console.log(session);
-  if (!session)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+): Promise<Session> {
+  const session = await getServerSession(authConfig)
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
 
   if (session.user.role !== role) {
-    return NextResponse.json({ error: msg }, { status: 403 });
+    throw new Error(msg);
   }
+
+  return session;
 }
