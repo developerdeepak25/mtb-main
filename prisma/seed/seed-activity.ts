@@ -1,7 +1,6 @@
-import {  ActivityType, TransactionType } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import {  ActivityType, PrismaClient, TransactionType } from "@prisma/client";
 
-
+const prisma = new PrismaClient()
 
 // * this seed script is meant for production as well
 async function main() {
