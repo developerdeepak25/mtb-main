@@ -1,8 +1,9 @@
 import { checkRole } from "@/lib/utils/auth";
-import { PrismaClient, SpotlightStatus } from "@prisma/client";
+import {  SpotlightStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
+
 
 // Define valid status transitions
 const VALID_STATUS_TRANSITIONS: Record<SpotlightStatus, SpotlightStatus[]> = {

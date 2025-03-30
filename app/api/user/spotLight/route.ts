@@ -1,8 +1,9 @@
 import { checkRole } from "@/lib/utils/auth";
-import { ActivityType, PrismaClient, SpotlightStatus } from "@prisma/client";
+import { ActivityType,  SpotlightStatus } from "@prisma/client";
 import {  NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
+
 
 //! add check for profile completion
 

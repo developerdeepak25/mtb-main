@@ -1,8 +1,8 @@
 import { checkRole } from "@/lib/utils/auth";
-import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
+
 
 // * get all spotlight applications
 export async function GET(request: NextRequest) {

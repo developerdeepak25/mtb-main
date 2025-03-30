@@ -1,11 +1,11 @@
-import { ActivityType, AuthMethod, PrismaClient } from "@prisma/client";
+import { ActivityType, AuthMethod } from "@prisma/client";
 import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { assignJp } from "@/lib/utils/jp";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
 
 const DEFAULT_MAX_AGE = 45 * 60;
 const REMEMBER_ME_MAX_AGE = 7 * 24 * 60 * 60;

@@ -1,8 +1,9 @@
 // function to add jp according to the plan and activity
 
-import { ActivityType, Prisma, PrismaClient } from "@prisma/client";
+import { ActivityType, Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
+
 
 type UserWithPlan = Prisma.UserGetPayload<{
   include: {
