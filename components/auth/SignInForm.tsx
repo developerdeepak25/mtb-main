@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -12,7 +12,7 @@ import { getAxiosErrorMessage } from "@/utils/ax";
 import { SigninFormType, signinSchema } from "@/schema/zodSchema";
 import { signIn } from "next-auth/react";
 
-export default function SignInForm() {
+function SignInFormContent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const {
@@ -41,7 +41,7 @@ export default function SignInForm() {
         toast.error(error);
       }, 100);
     }
-  }, [error,router]);
+  }, [error, router]);
 
   const onSubmit = async (data: SigninFormType) => {
     console.log("siginin form data", data);
@@ -197,5 +197,13 @@ export default function SignInForm() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function SignInForm() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInFormContent />
+    </Suspense>
   );
 }
